@@ -1,1 +1,610 @@
-kdsfgjkhsgf
+Aqui mostrare todos los códigos modificados en cuestión:
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Maze.C
+#include <stdbool.h>
+#include <stdio.h>
+
+#define ROWS 6
+#define COLS 5
+
+
+void printMaze(int maze[ROWS][COLS])
+{
+for(int i=0;i<ROWS;i++){
+	for(int j=0;j<COLS;j++){
+		printf("%d \t",maze[i][j]);
+	}
+	printf("\n");
+	}
+}
+
+bool is_valid_move(int maze[ROWS][COLS], int x, int y) {
+    return x >= 0 && x < ROWS && y >= 0 && y < COLS && maze[x][y] == 0;
+}
+
+bool dfs(int maze[ROWS][COLS], int x, int y, int end_x, int end_y, int path[ROWS * COLS][2], int *path_length) {
+    if (x == end_x && y == end_y) {
+        path[*path_length][0] = x;
+        path[*path_length][1] = y;
+        (*path_length)++;
+        return true;
+    }
+
+    maze[x][y] = 2;
+    int moves[][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+    for (int i = 0; i < 4; i++) {
+        int nx = x + moves[i][0];
+        int ny = y + moves[i][1];
+        if (is_valid_move(maze, nx, ny)) {
+            if (dfs(maze, nx, ny, end_x, end_y, path, path_length)) {
+                path[*path_length][0] = x;
+                path[*path_length][1] = y;
+                (*path_length)++;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+int main() {
+    int maze[ROWS][COLS] = {
+        {0, 0, 0, 1, 0},
+        {1, 1, 0, 1, 0},
+        {0, 0, 0, 0, 0},
+        {0, 1, 1, 1, 0},
+        {0, 0, 0, 1, 0},
+        {0, 1, 0, 0, 0},
+         {0, 1, 1, 1, 0},
+        {0, 0, 0, 1, 0},
+        {0, 1, 0, 0, 0}, 
+        {0, 1, 1, 1, 0},
+        {0, 0, 0, 1, 0},
+        {0, 1, 0, 0, 0},
+    };
+
+	printf("This is the maze\n");
+	printMaze(maze);
+
+    int start_x = 0;
+    int start_y = 0;
+    int end_x = 5;
+    int end_y = 4;
+
+    int path[ROWS * COLS][2];
+    int path_length = 0;
+
+    if (dfs(maze, start_x, start_y, end_x, end_y, path, &path_length)) {
+        printf("Maze solved! Path:\n");
+        for (int i = path_length - 1; i >= 0; i--) {
+            printf("(%d, %d)\n", path[i][0], path[i][1]);
+        }
+    } else {
+        printf("No solution found.\n");
+    }
+
+    return 0;
+}
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Maze.py
+
+def solve_maze(maze, start, end):
+    def is_valid_move(x, y):
+        return 0 <= x < len(maze) and 0 <= y < len(maze[0]) and maze[x][y] == 0
+
+    def dfs(x, y):
+        if (x, y) == end:
+            return [(x, y)]
+
+        maze[x][y] = 2  # Mark the cell as visited
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            nx, ny = x + dx, y + dy
+            if is_valid_move(nx, ny):
+                path = dfs(nx, ny)
+                if path:
+                    return [(x, y)] + path
+
+        return None
+
+    return dfs(*start)
+
+
+maze = [
+    [0, 0, 0, 1, 0],
+    [1, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0],
+    [0, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0],
+    [0, 1, 1, 1, 0],
+    [0, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0],
+]
+
+print('The maze is')
+print()
+for line in maze:
+	print(line)
+print()
+
+start = (0, 0)
+end = (5, 4)
+
+path = solve_maze(maze, start, end)
+if path:
+    print("Maze solved! Path:", path)
+else:
+    print("No solution found.")
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Mergesort.c
+
+/* C program for Merge Sort */
+#include <stdio.h>
+#include <stdlib.h>
+
+// Merges two subarrays of arr[].
+// First subarray is arr[l..m]
+// Second subarray is arr[m+1..r]
+void merge(int arr[], int l, int m, int r)
+{
+	int i, j, k;
+	int n1 = m - l + 1;
+	int n2 = r - m;
+
+	/* create temp arrays */
+	int L[n1], R[n2];
+
+	/* Copy data to temp arrays L[] and R[] */
+	for (i = 0; i < n1; i++)
+		L[i] = arr[l + i];
+	for (j = 0; j < n2; j++)
+		R[j] = arr[m + 1 + j];
+
+	/* Merge the temp arrays back into arr[l..r]*/
+	i = 0; // Initial index of first subarray
+	j = 0; // Initial index of second subarray
+	k = l; // Initial index of merged subarray
+	while (i < n1 && j < n2) {
+		if (L[i] <= R[j]) {
+			arr[k] = L[i];
+			i++;
+		}
+		else {
+			arr[k] = R[j];
+			j++;
+		}
+		k++;
+	}
+
+	/* Copy the remaining elements of L[], if there
+	are any */
+	while (i < n1) {
+		arr[k] = L[i];
+		i++;
+		k++;
+	}
+
+	/* Copy the remaining elements of R[], if there
+	are any */
+	while (j < n2) {
+		arr[k] = R[j];
+		j++;
+		k++;
+	}
+}
+
+/* l is for left index and r is right index of the
+sub-array of arr to be sorted */
+void mergeSort(int arr[], int l, int r)
+{
+	if (l < r) {
+		// Same as (l+r)/2, but avoids overflow for
+		// large l and h
+		int m = l + (r - l) / 2;
+
+		// Sort first and second halves
+		mergeSort(arr, l, m);
+		mergeSort(arr, m + 1, r);
+
+		merge(arr, l, m, r);
+	}
+}
+
+/* UTILITY FUNCTIONS */
+/* Function to print an array */
+void printArray(int A[], int size)
+{
+	int i;
+	for (i = 0; i < size; i++)
+		printf("%d ", A[i]);
+	printf("\n");
+}
+
+/* Driver code */
+int main()
+{
+	int arr[10000];
+	int i=0;
+	for(i;i<10000;i++){
+		arr[i]=i+1;
+	}
+	int arr_size = sizeof(arr) / sizeof(arr[0]);
+
+	printf("Given array is \n");
+	printArray(arr, arr_size);
+
+	mergeSort(arr, 0, arr_size - 1);
+
+	printf("\nSorted array is \n");
+	printArray(arr, arr_size);
+	return 0;
+}
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Mergesort.py
+import time
+inicio=time.time()
+def mergeSort(arr):
+	if len(arr) > 1:
+
+		# Finding the mid of the array
+		mid = len(arr)//2
+
+		# Dividing the array elements
+		L = arr[:mid]
+
+		# into 2 halves
+		R = arr[mid:]
+
+		# Sorting the first half
+		mergeSort(L)
+
+		# Sorting the second half
+		mergeSort(R)
+
+		i = j = k = 0
+
+		# Copy data to temp arrays L[] and R[]
+		while i < len(L) and j < len(R):
+			if L[i] <= R[j]:
+				arr[k] = L[i]
+				i += 1
+			else:
+				arr[k] = R[j]
+				j += 1
+			k += 1
+
+		# Checking if any element was left
+		while i < len(L):
+			arr[k] = L[i]
+			i += 1
+			k += 1
+
+		while j < len(R):
+			arr[k] = R[j]
+			j += 1
+			k += 1
+
+# Code to print the list
+
+
+def printList(arr):
+	for i in range(len(arr)):
+		print(arr[i], end=" ")
+	print()
+
+
+# Driver Code
+if __name__ == '__main__':
+	arr = []
+	for i in range(10000):
+		arr.append(i+1)
+	print("Given array is", end="\n")
+	printList(arr)
+	mergeSort(arr)
+	print("Sorted array is: ", end="\n")
+	printList(arr)
+fin=time.time()
+print(fin-inicio)
+# This code is contributed by Mayank Khanna
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Min_max.c
+// C code to demonstrate Divide and
+// Conquer Algorithm
+#include <stdio.h>
+int DAC_Max(int a[], int index, int l);
+int DAC_Min(int a[], int index, int l);
+
+// function to find the maximum no.
+// in a given array.
+int DAC_Max(int a[], int index, int l)
+{
+	int max;
+	if(l - 1 == 0)
+	{
+	return a[index];
+	}
+	if (index >= l - 2) {
+		if (a[index] > a[index + 1])
+			return a[index];
+		else
+			return a[index + 1];
+	}
+
+	// logic to find the Maximum element
+	// in the given array.
+	max = DAC_Max(a, index + 1, l);
+
+	if (a[index] > max)
+		return a[index];
+	else
+		return max;
+}
+
+// Function to find the minimum no.
+// in a given array.
+int DAC_Min(int a[], int index, int l)
+{
+	int min;
+	if(l - 1 == 0)
+	{
+	return a[index];
+	}
+	if (index >= l - 2) {
+		if (a[index] < a[index + 1])
+			return a[index];
+		else
+			return a[index + 1];
+	}
+
+	// Logic to find the Minimum element
+	// in the given array.
+	min = DAC_Min(a, index + 1, l);
+
+	if (a[index] < min)
+		return a[index];
+	else
+		return min;
+}
+
+// Driver Code
+int main()
+{
+	// Defining the variables
+	int min, max, N;
+
+	// Initializing the array
+	 int arreglo[10000];
+
+    // Inicializar arreglo
+    for (int i = 0; i < 10000; i++) {
+        arreglo[i] = i + 1;
+    }
+
+	// recursion - DAC_Max function called
+	max = DAC_Max(a, 0, 7);
+
+	// recursion - DAC_Max function called
+	min = DAC_Min(a, 0, 7);
+	printf("The minimum number in a given array is : %d\n", min);
+	printf("The maximum number in a given array is : %d", max);
+	return 0;
+}
+
+// This code is contributed by Ashish Rana (GFG Team)
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Min_max.py
+# Python3 code to demonstrate Divide and
+# Conquer Algorithm
+
+# Function to find the maximum no.
+# in a given array.
+import random
+import time
+inicio=time.time()
+def DAC_Max(a, index, l):
+	max = -1
+	if(l - 1 == 0):
+		return arr[index]
+	if (index >= l - 2):
+		if (a[index] > a[index + 1]):
+			return a[index]
+		else:
+			return a[index + 1]
+
+	# Logic to find the Maximum element
+	# in the given array.
+	max = DAC_Max(a, index + 1, l)
+
+	if (a[index] > max):
+		return a[index]
+	else:
+		return max
+
+# Function to find the minimum no.
+# in a given array.
+
+
+def DAC_Min(a, index, l):
+	min = 0
+	if(l - 1 == 0):
+		return arr[index]
+	if (index >= l - 2):
+		if (a[index] < a[index + 1]):
+			return a[index]
+		else:
+			return a[index + 1]
+
+	# Logic to find the Minimum element
+	# in the given array.
+	min = DAC_Min(a, index + 1, l)
+
+	if (a[index] < min):
+		return a[index]
+	else:
+		return min
+
+
+# Driver Code
+if __name__ == '__main__':
+
+	# Defining the variables
+	min, max = 0, -1
+	a=[]
+	# Initializing the array
+	for i in range(10000):
+		a.append(random.randint(0,1000))
+
+	# Recursion - DAC_Max function called
+	max = DAC_Max(a, 0, 7)
+
+	# Recursion - DAC_Max function called
+	min = DAC_Min(a, 0, 7)
+	print("The minimum number in a given array is : ", min)
+	print("The maximum number in a given array is : ", max)
+fin=time.time()
+print(fin-inicio)
+# This code is contributed by 29AjayKumar
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+quicksort.c
+// C code to implement quicksort
+
+#include <stdio.h>
+
+// Function to swap two elements
+void swap(int* a, int* b)
+{
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+
+// Partition the array using the last element as the pivot
+int partition(int arr[], int low, int high)
+{
+	// Choosing the pivot
+	int pivot = arr[high];
+	
+	// Index of smaller element and indicates
+	// the right position of pivot found so far
+	int i = (low - 1);
+	int j = low;
+	for (j; j <= high - 1; j++) {
+		
+		// If current element is smaller than the pivot
+		if (arr[j] < pivot) {
+			
+			// Increment index of smaller element
+			i++;
+			swap(&arr[i], &arr[j]);
+		}
+	}
+	swap(&arr[i + 1], &arr[high]);
+	return (i + 1);
+}
+
+// The main function that implements QuickSort
+// arr[] --> Array to be sorted,
+// low --> Starting index,
+// high --> Ending index
+void quickSort(int arr[], int low, int high)
+{
+	if (low < high) {
+		
+		// pi is partitioning index, arr[p]
+		// is now at right place
+		int pi = partition(arr, low, high);
+		
+		// Separately sort elements before
+		// partition and after partition
+		quickSort(arr, low, pi - 1);
+		quickSort(arr, pi + 1, high);
+	}
+}
+
+// Driver code
+int main()
+{
+	int arr[10000];
+	int i = 0;
+    // Inicializar arreglo
+    for (i; i < 10000; i++) {
+        arr[i] = i + 1;
+    }
+	int N = sizeof(arr) / sizeof(arr[0]);
+
+	// Function call
+	quickSort(arr, 0, N - 1);
+	printf("Sorted array: \n");
+	 i = 0;
+	for (i; i < N; i++)
+		printf("%d ", arr[i]);
+	return 0;
+}
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+quicksort.py
+
+# Python3 implementation of QuickSort
+import time
+inicio=time.time()
+# Function to find the partition position
+def partition(array, low, high):
+
+	# Choose the rightmost element as pivot
+	pivot = array[high]
+
+	# Pointer for greater element
+	i = low - 1
+
+	# Traverse through all elements
+	# compare each element with pivot
+	for j in range(low, high):
+		if array[j] <= pivot:
+
+			# If element smaller than pivot is found
+			# swap it with the greater element pointed by i
+			i = i + 1
+
+			# Swapping element at i with element at j
+			(array[i], array[j]) = (array[j], array[i])
+
+	# Swap the pivot element with
+	# the greater element specified by i
+	(array[i + 1], array[high]) = (array[high], array[i + 1])
+
+	# Return the position from where partition is done
+	return i + 1
+
+
+# Function to perform quicksort
+def quicksort(array, low, high):
+	if low < high:
+
+		# Find pivot element such that
+		# element smaller than pivot are on the left
+		# element greater than pivot are on the right
+		pi = partition(array, low, high)
+
+		# Recursive call on the left of pivot
+		quicksort(array, low, pi - 1)
+
+		# Recursive call on the right of pivot
+		quicksort(array, pi + 1, high)
+
+
+# Driver code
+if __name__ == '__main__':
+	array = []
+	for i in range(10000):
+		array.append(i+1)
+	N = len(array)
+
+	# Function call
+	quicksort(array, 0, N - 1)
+	print('Sorted array:')
+	for x in array:
+		print(x, end=" ")
+final=time.time()
+print(final-inicio)
+# This code is contributed by Adnan Aliakbar
